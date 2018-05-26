@@ -4,6 +4,7 @@ import android.arch.persistence.db.SupportSQLiteDatabase;
 import android.arch.persistence.room.Database;
 import android.arch.persistence.room.Room;
 import android.arch.persistence.room.RoomDatabase;
+import android.arch.persistence.room.migration.Migration;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
@@ -27,11 +28,7 @@ public abstract class AppDatabase extends RoomDatabase{
     }
 
     private static AppDatabase create(Context context) {
-        return Room.databaseBuilder(
-                context,
-                AppDatabase.class,
-                DB_NAME
-        ).build();
+        return Room.databaseBuilder(context, AppDatabase.class, DB_NAME).build();
     }
 
     public abstract UserDao userDao();

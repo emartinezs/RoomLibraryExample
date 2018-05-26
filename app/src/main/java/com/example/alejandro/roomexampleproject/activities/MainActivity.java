@@ -1,7 +1,10 @@
 package com.example.alejandro.roomexampleproject.activities;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
@@ -16,18 +19,19 @@ import android.view.MenuItem;
 
 import com.example.alejandro.roomexampleproject.R;
 import com.example.alejandro.roomexampleproject.database.AppDatabase;
-import com.example.alejandro.roomexampleproject.database.daos.NoteDao;
 import com.example.alejandro.roomexampleproject.database.daos.UserDao;
 import com.example.alejandro.roomexampleproject.fragments.UserInfoFragment;
 import com.example.alejandro.roomexampleproject.models.User;
 
 public class MainActivity extends AppCompatActivity {
-    DrawerLayout drawerLayout;
-    Toolbar toolbar;
-    ActionBar actionBar;
-    AppDatabase database;
-    FragmentManager fragmentManager;
-    FragmentTransaction fragmentTransaction;
+
+    private DrawerLayout drawerLayout;
+    private Toolbar toolbar;
+    private ActionBar actionBar;
+    private AppDatabase database;
+    private FragmentManager fragmentManager;
+    private FragmentTransaction fragmentTransaction;
+    private SharedPreferences sharedPreferences;
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -46,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
 
         //database
         database = AppDatabase.getInstance(getApplicationContext());
-        new FillInitialDbAsync(database).execute();
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         //setting up the toolbar
         toolbar = findViewById(R.id.toolbar);
@@ -69,12 +73,16 @@ public class MainActivity extends AppCompatActivity {
                 fragmentTransaction = fragmentManager.beginTransaction();
 
                 switch (item.getItemId()){
-                    case R.id.user:
-                        new GetUsersAsync(database).execute();
+                    case R.id.profileItem:
+                        new GetUserAsync(database).execute();
                         break;
 
-                    case R.id.notes:
+                    case R.id.notesItem:
                         Log.d("DrawerLayout", "Notes not implemented yet");
+                        break;
+
+                    case R.id.changeUserItem:
+                        logout();
                         break;
                 }
                 return true;
@@ -82,16 +90,26 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private class GetUsersAsync extends AsyncTask<Void, User, User>{
+    private void logout(){
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("USERNAME", null);
+        editor.commit();
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    private class GetUserAsync extends AsyncTask<Void, User, User>{
         private final UserDao userdao;
 
-        private GetUsersAsync(AppDatabase db) {
+        private GetUserAsync(AppDatabase db) {
             this.userdao = db.userDao();
         }
 
         @Override
         protected User doInBackground(Void... voids) {
-            return userdao.getAll().get(0);
+            String username = sharedPreferences.getString("USERNAME", null);
+            return userdao.findByUsername(username);
         }
 
         @Override
@@ -102,23 +120,6 @@ public class MainActivity extends AppCompatActivity {
 
             fragmentTransaction.replace(R.id.contentFrame, fragment);
             fragmentTransaction.commit();
-        }
-    }
-
-    private class FillInitialDbAsync extends AsyncTask<Void, Void, Void>{
-        private final UserDao userdao;
-        private final NoteDao notedao;
-
-        private FillInitialDbAsync(AppDatabase db) {
-            this.userdao = db.userDao();
-            this.notedao = db.noteDao();
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            userdao.insert(new User("Alejandro", "Velasco", "22577777"),
-                    new User("Enrique", "Palacios", "22577777"));
-            return null;
         }
     }
  }
