@@ -25,19 +25,19 @@
             android:layout_height="match_parent">
 
             <TextView
-                android:id="@+id/username"
+                android:id="@+id/usernameTextView"
                 android:layout_weight="1"
                 android:layout_width="match_parent"
                 android:layout_height="0dp" />
 
             <TextView
-                android:id="@+id/firstName"
+                android:id="@+id/firstNameTextView"
                 android:layout_weight="1"
                 android:layout_width="match_parent"
                 android:layout_height="0dp" />
 
             <TextView
-                android:id="@+id/lastName"
+                android:id="@+id/lastNameTextView"
                 android:layout_weight="1"
                 android:layout_width="match_parent"
                 android:layout_height="0dp" />
@@ -49,7 +49,7 @@
     </LinearLayout>
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/recyclerView"
+        android:id="@+id/userNotesRecyclerView"
         android:layout_weight="7"
         android:layout_width="match_parent"
         android:layout_height="0dp"/>
