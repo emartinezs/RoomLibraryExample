@@ -7,7 +7,6 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.alejandro.roomexampleproject.R;
@@ -17,19 +16,19 @@ import com.example.alejandro.roomexampleproject.models.User;
 import java.util.List;
 
 public class UserInfoFragment extends Fragment{
-    User user;
-    List<Note> userNotes;
-    TextView username, firstName, lastName;
 
+    private User user;
+    private List<Note> userNotes;
+    private TextView username, firstName, lastName;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.user_info, container, false);
 
-        username  = v.findViewById(R.id.username);
-        firstName = v.findViewById(R.id.firstName);
-        lastName = v.findViewById(R.id.lastName);
+        username  = v.findViewById(R.id.usernameTextView);
+        firstName = v.findViewById(R.id.firstNameTextView);
+        lastName = v.findViewById(R.id.lastNameTextView);
 
         username.setText(user.getUsername());
         firstName.setText(user.getFirstName());

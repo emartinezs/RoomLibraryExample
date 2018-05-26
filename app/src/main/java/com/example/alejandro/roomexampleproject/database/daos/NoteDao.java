@@ -9,7 +9,6 @@ import android.arch.persistence.room.Update;
 
 import com.example.alejandro.roomexampleproject.models.Note;
 
-import java.util.Date;
 import java.util.List;
 
 @Dao

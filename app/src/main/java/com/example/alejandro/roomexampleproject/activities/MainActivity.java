@@ -14,14 +14,18 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.MenuItem;
 
 import com.example.alejandro.roomexampleproject.R;
 import com.example.alejandro.roomexampleproject.database.AppDatabase;
+import com.example.alejandro.roomexampleproject.database.daos.NoteDao;
 import com.example.alejandro.roomexampleproject.database.daos.UserDao;
+import com.example.alejandro.roomexampleproject.fragments.NoteListFragment;
 import com.example.alejandro.roomexampleproject.fragments.UserInfoFragment;
+import com.example.alejandro.roomexampleproject.models.Note;
 import com.example.alejandro.roomexampleproject.models.User;
+
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -32,16 +36,6 @@ public class MainActivity extends AppCompatActivity {
     private FragmentManager fragmentManager;
     private FragmentTransaction fragmentTransaction;
     private SharedPreferences sharedPreferences;
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
-            case android.R.id.home:
-                drawerLayout.openDrawer(GravityCompat.START);
-                return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,13 +66,13 @@ public class MainActivity extends AppCompatActivity {
                 fragmentManager = getSupportFragmentManager();
                 fragmentTransaction = fragmentManager.beginTransaction();
 
-                switch (item.getItemId()){
+                switch (item.getItemId()) {
                     case R.id.profileItem:
                         new GetUserAsync(database).execute();
                         break;
 
                     case R.id.notesItem:
-                        Log.d("DrawerLayout", "Notes not implemented yet");
+                        new GetNotesAsync(database).execute();
                         break;
 
                     case R.id.changeUserItem:
@@ -90,7 +84,17 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void logout(){
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                drawerLayout.openDrawer(GravityCompat.START);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void logout() {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("USERNAME", null);
         editor.commit();
@@ -99,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
         finish();
     }
 
-    private class GetUserAsync extends AsyncTask<Void, User, User>{
+    private class GetUserAsync extends AsyncTask<Void, User, User> {
         private final UserDao userdao;
 
         private GetUserAsync(AppDatabase db) {
@@ -122,4 +126,33 @@ public class MainActivity extends AppCompatActivity {
             fragmentTransaction.commit();
         }
     }
- }
+
+    private class GetNotesAsync extends AsyncTask<Void, Void, Void> {
+        private final NoteDao noteDao;
+        private final UserDao userDao;
+        private List<Note> notes;
+
+        private GetNotesAsync(AppDatabase db) {
+            this.noteDao = db.noteDao();
+            this.userDao = db.userDao();
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            String username = sharedPreferences.getString("USERNAME", null);
+            int id = userDao.findByUsername(username).getId();
+            notes = noteDao.getAllNotesByUser(id);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void voids) {
+            super.onPostExecute(voids);
+            NoteListFragment fragment = new NoteListFragment();
+            fragment.setUserNotes(notes);
+
+            fragmentTransaction.replace(R.id.contentFrame, fragment);
+            fragmentTransaction.commit();
+        }
+    }
+}
