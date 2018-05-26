@@ -2,14 +2,19 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <group android:checkableBehavior="single">
         <item
-            android:id="@+id/user"
+            android:id="@+id/profileItem"
             android:icon="@android:drawable/btn_dropdown"
-            android:title="Information" />
+            android:title="Profile" />
 
         <item
-            android:id="@+id/notes"
+            android:id="@+id/notesItem"
             android:icon="@android:drawable/list_selector_background"
             android:title="Notes" />
+
+        <item
+            android:id="@+id/changeUserItem"
+            android:icon="@android:drawable/list_selector_background"
+            android:title="Change user" />
     </group>
 
 </menu>
