@@ -19,7 +19,7 @@ import java.util.List;
 public class UserInfoFragment extends Fragment{
     User user;
     List<Note> userNotes;
-    TextView firstName, lastName;
+    TextView username, firstName, lastName;
 
 
     @Nullable
@@ -27,9 +27,11 @@ public class UserInfoFragment extends Fragment{
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.user_info, container, false);
 
+        username  = v.findViewById(R.id.username);
         firstName = v.findViewById(R.id.firstName);
         lastName = v.findViewById(R.id.lastName);
 
+        username.setText(user.getUsername());
         firstName.setText(user.getFirstName());
         lastName.setText(user.getLastName());
 

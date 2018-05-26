@@ -28,6 +28,9 @@ public interface UserDao {
     @Query("SELECT * FROM user WHERE id IN (:userIds)")
     List<User> loadAllByIds(int[] userIds);
 
+    @Query("SELECT * FROM user WHERE username LIKE (:username) LIMIT 1")
+    User findByUsername(String username);
+
     @Query("SELECT * FROM user WHERE first_name LIKE (:name) LIMIT 1")
     User findByName(String name);
 

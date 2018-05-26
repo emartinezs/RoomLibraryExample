@@ -4,10 +4,15 @@ import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 
+import java.util.Date;
+
 @Entity
 public class User {
     @PrimaryKey(autoGenerate = true)
     private int id;
+
+    @ColumnInfo(name = "username")
+    private String username;
 
     @ColumnInfo(name = "first_name")
     private String firstName;
@@ -15,7 +20,8 @@ public class User {
     @ColumnInfo(name = "last_name")
     private String lastName;
 
-    public User(String firstName, String lastName, String phone) {
+    public User(String username, String firstName, String lastName, String phone) {
+        this.username = username;
         this.firstName = firstName;
         this.lastName = lastName;
         this.phone = phone;
@@ -54,5 +60,13 @@ public class User {
 
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 }
