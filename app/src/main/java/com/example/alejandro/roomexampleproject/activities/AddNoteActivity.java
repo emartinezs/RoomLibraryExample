@@ -64,7 +64,7 @@ public class AddNoteActivity extends AppCompatActivity{
         protected String doInBackground(Void... voids) {
             String username = sharedPreferences.getString("USERNAME", null);
             int id = userDao.findByUsername(username).getId();
-            noteDao.insert(new Note(noteEditText.getText().toString(), id));
+            noteDao.insert(new Note(noteEditText.getText().toString(), id, 0));
             return "DONE";
         }
     }

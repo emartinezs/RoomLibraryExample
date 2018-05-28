@@ -5,12 +5,14 @@ import android.arch.persistence.room.Room;
 import android.arch.persistence.room.RoomDatabase;
 import android.content.Context;
 
+import com.example.alejandro.roomexampleproject.database.daos.CategoryDao;
 import com.example.alejandro.roomexampleproject.database.daos.NoteDao;
 import com.example.alejandro.roomexampleproject.database.daos.UserDao;
+import com.example.alejandro.roomexampleproject.models.Category;
 import com.example.alejandro.roomexampleproject.models.Note;
 import com.example.alejandro.roomexampleproject.models.User;
 
-@Database(entities = {User.class, Note.class}, version = 1)
+@Database(entities = {User.class, Note.class, Category.class}, version = 1)
 public abstract class AppDatabase extends RoomDatabase{
     private static final String DB_NAME = "notesDatabase.db";
     private static volatile AppDatabase instance;
@@ -19,7 +21,6 @@ public abstract class AppDatabase extends RoomDatabase{
         if (instance == null){
             instance = create(context);
         }
-
         return instance;
     }
 
@@ -29,4 +30,5 @@ public abstract class AppDatabase extends RoomDatabase{
 
     public abstract UserDao userDao();
     public abstract NoteDao noteDao();
+    public abstract CategoryDao categoryDao();
 }
