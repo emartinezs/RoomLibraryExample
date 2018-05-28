@@ -27,7 +27,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
     @Override
     public NoteViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(context);
-        View view = inflater.inflate(R.layout.note_cardview, parent, false);
+        View view = inflater.inflate(R.layout   .note_cardview, parent, false);
         return new NoteViewHolder(view);
     }
 
@@ -35,6 +35,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
     public void onBindViewHolder(@NonNull NoteViewHolder holder, int position) {
         Note note = notes.get(position);
         holder.noteTextView.setText(note.getData());
+        holder.categoryTextView.setText(""+note.getCategoryId());
     }
 
     @Override
@@ -45,10 +46,12 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
     public class NoteViewHolder extends RecyclerView.ViewHolder {
 
         private TextView noteTextView;
+        private TextView categoryTextView;
 
         public NoteViewHolder(View view) {
             super(view);
             noteTextView = view.findViewById(R.id.noteTextView);
+            categoryTextView = view.findViewById(R.id.categoryTextView);
         }
     }
 }
