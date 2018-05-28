@@ -34,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     private ActionBar actionBar;
     private AppDatabase database;
     private SharedPreferences sharedPreferences;
+    private List<Note> notes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,16 +106,21 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private class GetUserAsync extends AsyncTask<Void, User, User> {
-        private final UserDao userdao;
+        private final UserDao userDao;
+        private final NoteDao noteDao;
+        private List<Note> notes;
 
         private GetUserAsync(AppDatabase db) {
-            this.userdao = db.userDao();
+            this.userDao = db.userDao();
+            this.noteDao = db.noteDao();
         }
 
         @Override
         protected User doInBackground(Void... voids) {
             String username = sharedPreferences.getString("USERNAME", null);
-            return userdao.findByUsername(username);
+            int id = userDao.findByUsername(username).getId();
+            notes = noteDao.getAllNotesByUser(id);
+            return userDao.findByUsername(username);
         }
 
         @Override
@@ -122,6 +128,7 @@ public class MainActivity extends AppCompatActivity {
             super.onPostExecute(user);
             UserInfoFragment fragment = new UserInfoFragment();
             fragment.setUser(user);
+            fragment.setUserNotes(notes);
 
             FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
