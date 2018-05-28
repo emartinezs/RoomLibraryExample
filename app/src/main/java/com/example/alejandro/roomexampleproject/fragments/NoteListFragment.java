@@ -1,5 +1,7 @@
+
 package com.example.alejandro.roomexampleproject.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -14,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.alejandro.roomexampleproject.R;
+import com.example.alejandro.roomexampleproject.activities.AddNoteActivity;
 import com.example.alejandro.roomexampleproject.adapters.NoteAdapter;
 import com.example.alejandro.roomexampleproject.models.Note;
 import com.example.alejandro.roomexampleproject.models.User;
@@ -24,6 +27,7 @@ public class NoteListFragment extends Fragment{
 
     private User user;
     private List<Note> userNotes;
+    private NoteAdapter adapter;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -38,7 +42,7 @@ public class NoteListFragment extends Fragment{
         RecyclerView recyclerView = view.findViewById(R.id.notesListRecyclerView);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(container.getContext());
         recyclerView.setLayoutManager(linearLayoutManager);
-        NoteAdapter adapter = new NoteAdapter(container.getContext(), userNotes);
+        adapter = new NoteAdapter(container.getContext(), userNotes);
         recyclerView.setAdapter(adapter);
         recyclerView.setHasFixedSize(true);
 
@@ -55,9 +59,16 @@ public class NoteListFragment extends Fragment{
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_add:
+                Intent intent = new Intent(getContext(), AddNoteActivity.class);
+                startActivityForResult(intent, 1);
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data){
+        adapter.notifyItemInserted(userNotes.size()+1);
     }
 
     public void setUser(User user) {

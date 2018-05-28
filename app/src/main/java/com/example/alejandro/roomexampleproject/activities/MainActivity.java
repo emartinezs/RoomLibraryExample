@@ -33,8 +33,6 @@ public class MainActivity extends AppCompatActivity {
     private Toolbar toolbar;
     private ActionBar actionBar;
     private AppDatabase database;
-    private FragmentManager fragmentManager;
-    private FragmentTransaction fragmentTransaction;
     private SharedPreferences sharedPreferences;
 
     @Override
@@ -44,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
 
         //database
         database = AppDatabase.getInstance(getApplicationContext());
-        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+        sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
         //setting up the toolbar
         toolbar = findViewById(R.id.toolbar);
@@ -62,9 +60,6 @@ public class MainActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 item.setChecked(true);
                 drawerLayout.closeDrawers();
-
-                fragmentManager = getSupportFragmentManager();
-                fragmentTransaction = fragmentManager.beginTransaction();
 
                 switch (item.getItemId()) {
                     case R.id.profileItem:
@@ -94,10 +89,16 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data){
+        new GetNotesAsync(database).execute();
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
     private void logout() {
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString("USERNAME", null);
-        editor.commit();
+        editor.apply();
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
         finish();
@@ -122,15 +123,16 @@ public class MainActivity extends AppCompatActivity {
             UserInfoFragment fragment = new UserInfoFragment();
             fragment.setUser(user);
 
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction.replace(R.id.contentFrame, fragment);
             fragmentTransaction.commit();
         }
     }
 
-    private class GetNotesAsync extends AsyncTask<Void, Void, Void> {
+    private class GetNotesAsync extends AsyncTask<Void, Void, List<Note>> {
         private final NoteDao noteDao;
         private final UserDao userDao;
-        private List<Note> notes;
 
         private GetNotesAsync(AppDatabase db) {
             this.noteDao = db.noteDao();
@@ -138,19 +140,20 @@ public class MainActivity extends AppCompatActivity {
         }
 
         @Override
-        protected Void doInBackground(Void... voids) {
+        protected List<Note> doInBackground(Void... voids) {
             String username = sharedPreferences.getString("USERNAME", null);
             int id = userDao.findByUsername(username).getId();
-            notes = noteDao.getAllNotesByUser(id);
-            return null;
+            return noteDao.getAllNotesByUser(id);
         }
 
         @Override
-        protected void onPostExecute(Void voids) {
-            super.onPostExecute(voids);
+        protected void onPostExecute(List<Note> notes) {
+            super.onPostExecute(notes);
             NoteListFragment fragment = new NoteListFragment();
             fragment.setUserNotes(notes);
 
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction.replace(R.id.contentFrame, fragment);
             fragmentTransaction.commit();
         }
