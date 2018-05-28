@@ -14,8 +14,9 @@ public class Category {
     @ColumnInfo(name = "name")
     private String name;
 
-    public Category(String name){
+    public Category(String name, int userId){
         this.name = name;
+        this.userId = userId;
     }
 
     @ColumnInfo(name = "user_id")

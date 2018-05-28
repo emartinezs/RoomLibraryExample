@@ -12,7 +12,9 @@ import android.widget.EditText;
 
 import com.example.alejandro.roomexampleproject.R;
 import com.example.alejandro.roomexampleproject.database.AppDatabase;
+import com.example.alejandro.roomexampleproject.database.daos.CategoryDao;
 import com.example.alejandro.roomexampleproject.database.daos.UserDao;
+import com.example.alejandro.roomexampleproject.models.Category;
 import com.example.alejandro.roomexampleproject.models.User;
 
 public class LoginActivity extends AppCompatActivity {
@@ -60,15 +62,19 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private class InsertUserAsync extends AsyncTask<Void, Void, Void> {
-        private final UserDao userdao;
+        private final UserDao userDao;
+        private final CategoryDao categoryDao;
 
         private InsertUserAsync(AppDatabase db) {
-            this.userdao = db.userDao();
+            this.userDao = db.userDao();
+            this.categoryDao = db.categoryDao();
         }
 
         @Override
         protected Void doInBackground(Void... voids) {
-            userdao.insert(new User(usernameEditText.getText().toString(), "", "", ""));
+            userDao.insert(new User(usernameEditText.getText().toString(), "", "", ""));
+            int id = userDao.findByUsername(usernameEditText.getText().toString()).getId();
+            categoryDao.insert(new Category("All", id));
             return null;
         }
     }

@@ -8,12 +8,14 @@
 
         <item
             android:id="@+id/notesItem"
-            android:icon="@android:drawable/list_selector_background"
             android:title="Notes" />
 
         <item
+            android:id="@+id/categoriesItem"
+            android:title="Categories"/>
+
+        <item
             android:id="@+id/changeUserItem"
-            android:icon="@android:drawable/list_selector_background"
             android:title="Change user" />
     </group>
 

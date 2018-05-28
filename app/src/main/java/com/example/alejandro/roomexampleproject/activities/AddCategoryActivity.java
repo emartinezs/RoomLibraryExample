@@ -12,51 +12,51 @@ import android.widget.EditText;
 
 import com.example.alejandro.roomexampleproject.R;
 import com.example.alejandro.roomexampleproject.database.AppDatabase;
-import com.example.alejandro.roomexampleproject.database.daos.NoteDao;
+import com.example.alejandro.roomexampleproject.database.daos.CategoryDao;
 import com.example.alejandro.roomexampleproject.database.daos.UserDao;
-import com.example.alejandro.roomexampleproject.models.Note;
+import com.example.alejandro.roomexampleproject.models.Category;
 
-public class AddNoteActivity extends AppCompatActivity{
+public class AddCategoryActivity extends AppCompatActivity{
 
     private SharedPreferences sharedPreferences;
-    private EditText noteEditText;
+    private EditText categoryEditText;
     private AppDatabase database;
-    private final int GET_NOTES = 1;
+    private final int GET_CATEGORIES = 2;
 
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_note);
+        setContentView(R.layout.activity_add_category);
 
         database = AppDatabase.getInstance(getApplicationContext());
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
-        noteEditText = findViewById(R.id.noteEditText);
-        Button addNoteButton = findViewById(R.id.addNoteButton);
+        categoryEditText = findViewById(R.id.categoryEditText);
+        Button addCategoryButton = findViewById(R.id.addCategoryButton);
 
-        addNoteButton.setOnClickListener(new View.OnClickListener() {
+        addCategoryButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 String result = "";
                 try {
-                    result = new InsertNoteAsync(database).execute().get();
+                    result = new InsertCategoryAsync(database).execute().get();
                 }catch (Exception e){}
                 while (!result.equals("DONE")){
 
                 }
                 Intent resultIntent = new Intent();
-                setResult(GET_NOTES, resultIntent);
+                setResult(GET_CATEGORIES, resultIntent);
                 finish();
             }
         });
     }
 
-    private class InsertNoteAsync extends AsyncTask<Void, Void, String>{
-        private NoteDao noteDao;
+    private class InsertCategoryAsync extends AsyncTask<Void, Void, String>{
+        private CategoryDao categoryDao;
         private UserDao userDao;
 
-        private InsertNoteAsync(AppDatabase db){
-            noteDao = db.noteDao();
+        private InsertCategoryAsync(AppDatabase db){
+            categoryDao = db.categoryDao();
             userDao = db.userDao();
         }
 
@@ -64,7 +64,7 @@ public class AddNoteActivity extends AppCompatActivity{
         protected String doInBackground(Void... voids) {
             String username = sharedPreferences.getString("USERNAME", null);
             int id = userDao.findByUsername(username).getId();
-            noteDao.insert(new Note(noteEditText.getText().toString(), id, 1));
+            categoryDao.insert(new Category(categoryEditText.getText().toString(), id));
             return "DONE";
         }
     }

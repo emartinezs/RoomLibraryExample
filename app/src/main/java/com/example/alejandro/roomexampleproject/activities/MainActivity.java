@@ -18,10 +18,13 @@ import android.view.MenuItem;
 
 import com.example.alejandro.roomexampleproject.R;
 import com.example.alejandro.roomexampleproject.database.AppDatabase;
+import com.example.alejandro.roomexampleproject.database.daos.CategoryDao;
 import com.example.alejandro.roomexampleproject.database.daos.NoteDao;
 import com.example.alejandro.roomexampleproject.database.daos.UserDao;
+import com.example.alejandro.roomexampleproject.fragments.CategoryListFragment;
 import com.example.alejandro.roomexampleproject.fragments.NoteListFragment;
 import com.example.alejandro.roomexampleproject.fragments.UserInfoFragment;
+import com.example.alejandro.roomexampleproject.models.Category;
 import com.example.alejandro.roomexampleproject.models.Note;
 import com.example.alejandro.roomexampleproject.models.User;
 
@@ -30,11 +33,8 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     private DrawerLayout drawerLayout;
-    private Toolbar toolbar;
-    private ActionBar actionBar;
     private AppDatabase database;
     private SharedPreferences sharedPreferences;
-    private List<Note> notes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,9 +46,9 @@ public class MainActivity extends AppCompatActivity {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
         //setting up the toolbar
-        toolbar = findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        actionBar = getSupportActionBar();
+        ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setHomeAsUpIndicator(R.drawable.ic_menu);
 
@@ -71,6 +71,10 @@ public class MainActivity extends AppCompatActivity {
                         new GetNotesAsync(database).execute();
                         break;
 
+                    case R.id.categoriesItem:
+                        new GetCategoriesAsync(database).execute();
+                        break;
+
                     case R.id.changeUserItem:
                         logout();
                         break;
@@ -91,8 +95,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data){
-        new GetNotesAsync(database).execute();
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (resultCode) {
+            case 1:
+                new GetNotesAsync(database).execute();
+                break;
+            case 2:
+                new GetCategoriesAsync(database).execute();
+                break;
+        }
         super.onActivityResult(requestCode, resultCode, data);
     }
 
@@ -158,6 +169,35 @@ public class MainActivity extends AppCompatActivity {
             super.onPostExecute(notes);
             NoteListFragment fragment = new NoteListFragment();
             fragment.setUserNotes(notes);
+
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.contentFrame, fragment);
+            fragmentTransaction.commit();
+        }
+    }
+
+    private class GetCategoriesAsync extends AsyncTask<Void, Void, List<Category>> {
+        private final CategoryDao categoryDao;
+        private final UserDao userDao;
+
+        private GetCategoriesAsync(AppDatabase db) {
+            this.categoryDao = db.categoryDao();
+            this.userDao = db.userDao();
+        }
+
+        @Override
+        protected List<Category> doInBackground(Void... voids) {
+            String username = sharedPreferences.getString("USERNAME", null);
+            int id = userDao.findByUsername(username).getId();
+            return categoryDao.getAllCategoriesByUser(id);
+        }
+
+        @Override
+        protected void onPostExecute(List<Category> categories) {
+            super.onPostExecute(categories);
+            CategoryListFragment fragment = new CategoryListFragment();
+            fragment.setUserCategories(categories);
 
             FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();

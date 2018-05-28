@@ -8,7 +8,6 @@ import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
 
 import com.example.alejandro.roomexampleproject.models.Category;
-import com.example.alejandro.roomexampleproject.models.Note;
 
 import java.util.List;
 
@@ -27,8 +26,8 @@ public interface CategoryDao {
     List<Category> getAll();
 
     @Query("SELECT * FROM Category WHERE id=(:id)")
-    Note findCategoryById(int id);
+    Category findCategoryById(int id);
 
     @Query("SELECT * FROM Category WHERE user_id=(:userId)")
-    List<Note> getAllCategoriesByUser(int userId);
+    List<Category> getAllCategoriesByUser(int userId);
 }
