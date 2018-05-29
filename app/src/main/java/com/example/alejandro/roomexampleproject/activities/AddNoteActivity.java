@@ -117,7 +117,6 @@ public class AddNoteActivity extends AppCompatActivity{
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                     selectedCategory = categoryIdList.get(i);
-
                 }
 
                 @Override

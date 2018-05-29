@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import com.example.alejandro.roomexampleproject.R;
 import com.example.alejandro.roomexampleproject.activities.AddNoteActivity;
 import com.example.alejandro.roomexampleproject.adapters.NoteAdapter;
+import com.example.alejandro.roomexampleproject.models.Category;
 import com.example.alejandro.roomexampleproject.models.Note;
 import com.example.alejandro.roomexampleproject.models.User;
 
@@ -27,6 +28,7 @@ public class NoteListFragment extends Fragment{
 
     private User user;
     private List<Note> userNotes;
+    private List<Category> userCategories;
     private NoteAdapter adapter;
 
     @Override
@@ -77,5 +79,9 @@ public class NoteListFragment extends Fragment{
 
     public void setUserNotes(List<Note> userNotes){
         this.userNotes = userNotes;
+    }
+
+    public void setUserCategories(List<Category> userCategories){
+        this.userCategories = userCategories;
     }
 }

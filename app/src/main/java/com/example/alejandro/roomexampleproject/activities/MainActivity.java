@@ -151,16 +151,20 @@ public class MainActivity extends AppCompatActivity {
     private class GetNotesAsync extends AsyncTask<Void, Void, List<Note>> {
         private final NoteDao noteDao;
         private final UserDao userDao;
+        private final CategoryDao categoryDao;
+        private List<Category> categories;
 
         private GetNotesAsync(AppDatabase db) {
             this.noteDao = db.noteDao();
             this.userDao = db.userDao();
+            this.categoryDao = db.categoryDao();
         }
 
         @Override
         protected List<Note> doInBackground(Void... voids) {
             String username = sharedPreferences.getString("USERNAME", null);
             int id = userDao.findByUsername(username).getId();
+            categories = categoryDao.getAllCategoriesByUser(id);
             return noteDao.getAllNotesByUser(id);
         }
 
@@ -169,6 +173,7 @@ public class MainActivity extends AppCompatActivity {
             super.onPostExecute(notes);
             NoteListFragment fragment = new NoteListFragment();
             fragment.setUserNotes(notes);
+            fragment.setUserCategories(categories);
 
             FragmentManager fragmentManager = getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();

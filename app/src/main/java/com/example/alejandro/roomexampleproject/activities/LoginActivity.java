@@ -43,11 +43,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 if (!usernameEditText.getText().toString().equals("")) {
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putString("USERNAME", usernameEditText.getText().toString());
-                    editor.apply();
-
-                    new InsertUserAsync(database).execute();
+                    new ValidateUserAsync(database).execute();
 
                     openMainActivity();
                     finish();
@@ -76,6 +72,37 @@ public class LoginActivity extends AppCompatActivity {
             int id = userDao.findByUsername(usernameEditText.getText().toString()).getId();
             categoryDao.insert(new Category("All", id));
             return null;
+        }
+    }
+
+    private class ValidateUserAsync extends AsyncTask<Void, Void, Void>{
+
+        private final UserDao userDao;
+        private boolean userExists = false;
+
+        private ValidateUserAsync(AppDatabase db) {
+            this.userDao = db.userDao();
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            String username = usernameEditText.getText().toString();
+            if (userDao.findByUsername(username) != null){
+                userExists = true;
+            }
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void voids) {
+            super.onPostExecute(voids);
+            String username = usernameEditText.getText().toString();
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.putString("USERNAME", username);
+            editor.apply();
+            if (!userExists) {
+                new InsertUserAsync(database).execute();
+            }
         }
     }
 }
